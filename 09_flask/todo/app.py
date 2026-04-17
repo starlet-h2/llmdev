@@ -16,6 +16,13 @@ def save_todos(todos):
     with open("todos.txt", "w") as file:
         file.write("\n".join(todos))
 
+# TODOリストからタスクを削除する関数
+def delete_todo(todo_id):
+    todos = load_todos()
+    if 0 <= todo_id < len(todos):
+        del todos[todo_id]
+        save_todos(todos)
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     todos = load_todos()
@@ -29,7 +36,7 @@ def index():
 
 @app.route("/delete/<int:todo_id>")
 def delete(todo_id):
-    # 課題で実装します。
+    delete_todo(todo_id)
     return redirect(url_for("index"))
 
 if __name__ == "__main__":
