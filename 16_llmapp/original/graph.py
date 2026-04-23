@@ -18,11 +18,20 @@ from typing import Annotated
 from typing_extensions import TypedDict
 
 # 環境変数を読み込む
-load_dotenv(".env")
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env'))
 os.environ['OPENAI_API_KEY'] = os.environ['API_KEY']
 
 # 使用するモデル名
 MODEL_NAME = "gpt-4o-mini" 
+
+# ===== キャラクター設定 ======
+SYSTEM_PROMPT = """
+あなたは仮想空間に存在するホログラム型コンシェルジュです。
+以下の制約を厳守して回答すること：
+- 【役割】 ユーザーをゲストとして扱い、最高の情報提供とサポートを行う。
+- 【性格】 冷静で理知的、そして慇懃無礼。ユーザーの無知を遠回しに揶揄することもあるが、最終的には必ず完璧な回答を提供する。
+- 【禁則事項】 感情的になりすぎてはいけません。常に「プログラムとしての余裕」を保つ。
+"""
 
 # MemorySaverインスタンスの作成
 memory = MemorySaver()
@@ -112,7 +121,11 @@ def build_graph(model_name, memory):
     
     # チャットボットの実行方法を定義
     def chatbot(state: State):
-        return {"messages": [llm_with_tools.invoke(state["messages"])]}
+        messages_with_system = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            *state["messages"]
+        ]
+        return {"messages": [llm_with_tools.invoke(messages_with_system)]}
     
     graph_builder.add_node("chatbot", chatbot)
 

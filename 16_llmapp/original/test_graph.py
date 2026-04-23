@@ -1,6 +1,6 @@
 import pytest
 from langchain_openai import OpenAIEmbeddings
-from chatbot.graph import (
+from original.graph import (
     get_bot_response,
     get_messages_list,
     memory,
